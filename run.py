@@ -271,7 +271,7 @@ class Map:
         self.make_start_end_last()
         start_node = self.nodes[-2]
 
-        # print(f"Start node - {start_node.ident}")
+        #print(f"Start node - {start_node.ident}")
         # put start node into the queue
         start_node.queued = True
         pq.put(start_node)
@@ -282,27 +282,27 @@ class Map:
             node = pq.pop()
             node.queued_com = True
 
-            # print(f"Searching node for routes - {node.ident}")
+            #print(f"Searching node for routes - {node.ident}")
             # search all sub nodes
             for sub_node_details in node.connected:
-                # print(f"Checking weight to sub_node - {sub_node.ident}")
+                #print(f"Checking weight to sub_node - {sub_node.ident}")
                 # get distance to node and subnode
                 sub_node, distance = sub_node_details
                 # if distace is better than current distance to this node then log
                 if sub_node.weight > node.weight + distance:
 
-                    print(f"New Distance Shorter Distance Found to sub_node - {sub_node.ident}")
+                    #print(f"New Distance Shorter Distance Found to sub_node - {sub_node.ident}")
                     # if has never been queued or "searched" then queue the item and not the node its already came from.
-                    # print(f"Old weight {sub_node.weight} new weight = {node.weight + distance}")
+                    #print(f"Old weight {sub_node.weight} new weight = {node.weight + distance}")
                     sub_node.weight = node.weight + distance
 
                     if sub_node != node.via and not sub_node.queued:
-                        print(f"Subnode not searched yet, adding to queue - {sub_node.ident}")
+                        #print(f"Subnode not searched yet, adding to queue - {sub_node.ident}")
                         pq.put(sub_node)
                         sub_node.queued = True
                         sub_node.via = node
                     elif sub_node != node.via and sub_node.queued and not sub_node.queued_com:
-                        print(f"Sub node priority updated in queue - {sub_node.ident}")
+                        #print(f"Sub node priority updated in queue - {sub_node.ident}")
                         sub_node.via = node
                         pq.put(sub_node)
 
@@ -527,6 +527,9 @@ if __name__ == "__main__":
     cv2.namedWindow(window_name)
     cv2.createTrackbar("Nodes", window_name, nodes, max_nodes, change_nodes)
     cv2.setMouseCallback(window_name, mouse_event)
+
+    #log string for output
+    log = ""
     # set map global var
     maps = None
     # get pysimpleguy window

@@ -29,28 +29,15 @@ python run.py
 Advanced:
 
 ```
+
 optional arguments:
-  -h, --help            show this help message and exit
-  -w Witht, --cities CITIES
-                        This is the amount of 'cities' to add to the map or
-                        the hardness of the calculation
-  -w WORKERS, --workers WORKERS
-                        The amount of workers per family generation
-  -f FAMILIES, --families FAMILIES
-                        The amount of families per generation
-  -b BREED, --breed BREED
-                        Generation number to breed between families on ... i.e
-                        every n times
-  -r RANDOM, --random RANDOM
-                        Draw the cities randomly on the map or equally spaced.
-                        0= equally (draws a perfect polygon of n sides, which
-                        is easy to determine when complete) 1= randomly
-                        (points are randomly selected in the 'map' space)
-  -d DRAW, --draw DRAW  Draw the output onscreen. 0= no 1= yes
+  -h, --help       show this help message and exit
+  --width WIDTH    Width of the 'map' in pixels
+  --height HEIGHT  Height of the 'map' in pixels
 
 ```
 
 i.e 
 ```
-python run.py -c 50 -w 100 -f 10 -b 30 -r 1 -d 10
+python run.py --height 400 --width 400
 ```
