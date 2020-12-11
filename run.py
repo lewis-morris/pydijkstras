@@ -406,14 +406,14 @@ def mouse_event(event, x, y, flags, param):
 def get_window():
     sg.theme('DarkAmber')  # Add a touch of color
     # All the stuff inside your window.
-    layout = [[sg.Button('Refresh', key="refresh"),
-               sg.Button('Change Start', key="change_start"),
-               sg.Button('Change End', key="change_end"),
-               sg.Button('Draw New Nodes', key="draw_nodes"),
-               sg.Button('Clear Nodes', key="clear_nodes"),
-               sg.Button('Clear Edges', key="clear_edges"),
-               sg.Button('Reload Edges', key="reload_edges"),
-               sg.Button('Quit', key="quit")]]
+    layout = [[sg.Button('Refresh', key="refresh", tooltip="Do a fresh reset of the board"),
+               sg.Button('Change Start Node', key="change_start", tooltip="Click nodes to set as start point"),
+               sg.Button('Change End Node', key="change_end", tooltip="Click nodes to set as end node"),
+               sg.Button('Draw New Nodes', key="draw_nodes", tooltip="Click to draw new nodes"),
+               sg.Button('Clear Nodes', key="clear_nodes", tooltip="Clear all nodes"),
+               sg.Button('Clear Edges', key="clear_edges", tooltip="Clear all edges"),
+               sg.Button('Reload Edges', key="reload_edges", tooltip="Regenerate edges randomly"),
+               sg.Button('Quit', key="quit", tooltip="quit")]]
 
     # Create the Window
     return sg.Window('Options', layout, keep_on_top = True)
