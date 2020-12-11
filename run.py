@@ -416,7 +416,7 @@ def get_window():
                sg.Button('Quit', key="quit")]]
 
     # Create the Window
-    return sg.Window('Options', layout)
+    return sg.Window('Options', layout, keep_on_top = True)
     # Event Loop to process "events" and get the "values" of the inputs
 
 
@@ -490,13 +490,14 @@ def run():
             maps.draw_edges()
             actions["draw_board"] = False
 
+        #set current route from start to end
         maps.set_route()
         if maps.route:
             maps.draw_solution()
 
         # check for keypresses
         check_window(window)
-
+        #window.move(cv2.getWindowImageRect(window_name)[0], cv2.getWindowImageRect(window_name)[1] ) # + cv2.getWindowImageRect(window_name)[3]+ 50)
         # show image
         cv2.imshow(window_name, maps.board_drawn)
         cv2.waitKey(1)
