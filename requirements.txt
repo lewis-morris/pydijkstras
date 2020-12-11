@@ -1,0 +1,4 @@
+opencv-python~=4.2.0.34
+numpy~=1.19.4
+PySimpleGUI~=4.24.0
+Shapely~=1.7.0

@@ -1,11 +1,8 @@
-import itertools
-from dataclasses import dataclass
+import argparse
 import cv2
 import math
-import random
 import numpy as np
-from queue import PriorityQueue
-from shapely.geometry import Polygon, Point
+from shapely.geometry import Point
 import sys
 import heapq as h
 import itertools
@@ -23,10 +20,11 @@ class PriQ:
         self.counter = itertools.count()  # unique sequence count
 
     def empty(self):
+        """ is queue empty?"""
         return len([x for x in self.pq if x[2] != self.REMOVED]) == 0
 
-    def put(self, task, priority=0):
-        'Add a new task or update the priority of an existing task'
+    def put(self, task):
+        """Add a new task or update the priority of an existing task"""
         if task in self.entry_finder:
             self.remove_task(task)
         count = next(self.counter)
@@ -35,12 +33,12 @@ class PriQ:
         h.heappush(self.pq, entry)
 
     def remove_task(self, task):
-        'Mark an existing task as REMOVED.  Raise KeyError if not found.'
+        """Mark an existing task as REMOVED.  Raise KeyError if not found."""
         entry = self.entry_finder.pop(task)
         entry[-1] = self.REMOVED
 
     def pop(self):
-        'Remove and return the lowest priority task. Raise KeyError if empty.'
+        """Remove and return the lowest priority task. Raise KeyError if empty."""
         while self.pq:
             priority, count, task = h.heappop(self.pq)
             if task is not self.REMOVED:
@@ -52,7 +50,7 @@ class PriQ:
 class Node:
     """ holds the city coords etc """
 
-    def __init__(self, maps, ident, pos=None):
+    def __init__(self, map_ob, ident, pos=None):
 
         self.ident = ident
 
@@ -63,7 +61,7 @@ class Node:
         else:
             self.x = self.y = None
 
-        self.setup(maps)
+        self.setup(map_ob)
 
         # get distance dict
         self.distances = {}
@@ -76,22 +74,22 @@ class Node:
         self.queued = False
         self.queued_com = False
 
-    def setup(self, maps):
+    def setup(self, map_ob):
         """
         Takes map object as input and randomly creates objects
         """
         # x position
         if not self.y:
-            self.y = random.randint(0 + int(maps.w * 0.05), maps.w - int(maps.w * 0.05))
+            self.y = random.randint(0 + int(map_ob.w * 0.05), map_ob.w - int(map_ob.w * 0.05))
         # y position
         if not self.x:
-            self.x = random.randint(0 + int(maps.h * 0.05), maps.h - int(maps.h * 0.05))
+            self.x = random.randint(0 + int(map_ob.h * 0.05), map_ob.h - int(map_ob.h * 0.05))
         # list of connected nodes
         self.connected = []
         # shapely point
         self.point = Point((self.y, self.x))
         # current radius - used for finding nearby points
-        self.radius = int(maps.w * 0.008)
+        self.radius = int(map_ob.w * 0.008)
         # radius polygon for above
         self.set_radius_poly()
 
@@ -119,11 +117,11 @@ class Node:
         return math.hypot(node.x - self.x, node.y - self.y)
 
     def get_position(self):
-        # return current position
+        """ return current position """
         return self.y, self.x
 
     def add_join(self, node):
-
+        """ add node """
         self.connected.append(node)
 
 
@@ -132,12 +130,12 @@ class Map:
     hold the map details
     """
 
-    def __init__(self, h, w, nodes=None, connections=(1, 4)):
-        self.h = h
-        self.w = w
+    def __init__(self, height, width, no_nodes=None, connections=(1, 3)):
+        self.h = height
+        self.w = width
         self.connections = connections
         # number of cities
-        self.no_nodes = nodes
+        self.no_nodes = no_nodes
         # cities list
         self.nodes = []
         # create cities, randomly if no points are passed
@@ -191,9 +189,9 @@ class Map:
         self.nodes = []
 
     def start_node_zero_weight(self):
-
+        """ zero weight of start item"""
         start = [x for x in self.nodes if x.position == "start"]
-        if start != []:
+        if start:
             start[0].weight = 0
 
     def clear_other(self, queued=False, edges=False, weight=False, via=False):
@@ -212,7 +210,6 @@ class Map:
     def init_random_edges(self):
         """
         Create all edges to nodes in an semi random fashion
-        :param connections:
         :return:
         """
 
@@ -227,13 +224,13 @@ class Map:
                     # add distance to dictionary
                     node.distances[sub_node] = node.get_distance_to_node(sub_node)
 
-            no_connected = random.randint(*self.connections)*2
+            no_connected = random.randint(*self.connections) * 2
 
             i = 0
             sorted_nodes = sorted(node.distances.items(), key=lambda x: x[1])
-            # sorted_nodes = sorted_nodes[:int(no_connected*2)]
-            # random.shuffle(sorted_nodes)
-            # sorted_nodes = sorted_nodes[:int(no_connected/2)]
+            sorted_nodes = sorted_nodes[:int(no_connected*2)]
+            random.shuffle(sorted_nodes)
+            sorted_nodes = sorted_nodes[:int(no_connected/2)]
 
             for no in sorted_nodes:
                 if no in node.connected:
@@ -247,7 +244,6 @@ class Map:
 
             random.shuffle(node.connected)
 
-
     def set_start_end(self):
         """Sent the start and end position as long as they are far enough away"""
         while self.get_distance(0, -1) < self.w * .7:
@@ -258,7 +254,7 @@ class Map:
         self.has_start = self.has_end = True
 
     def get_distance(self, pos, pos2):
-        # get distance between two cities
+        """get distance between two cities"""
         node1 = self.nodes[pos]
         node2 = self.nodes[pos2]
 
@@ -273,12 +269,12 @@ class Map:
 
         # get start node
         self.make_start_end_last()
-        startNode = self.nodes[-2]
+        start_node = self.nodes[-2]
 
-        # print(f"Start node - {startNode.ident}")
+        # print(f"Start node - {start_node.ident}")
         # put start node into the queue
-        startNode.queued = True
-        pq.put(startNode)
+        start_node.queued = True
+        pq.put(start_node)
 
         # iterate the queue until empty
         while not pq.empty():
@@ -316,7 +312,7 @@ class Map:
             self.route = []
             self.get_route()
 
-    def get_route(self, node=None, routes_to=[]):
+    def get_route(self, node=None, routes_to=None):
         """Recursively get the route"""
         if not node:
             node = [x for x in self.nodes if x.position == "end"][0]
@@ -328,19 +324,18 @@ class Map:
     def make_start_end_last(self):
         """ used to make sure the start and end last on the node list for drawing purposes"""
         start = [x for x in self.nodes if x.position == "start"]
-        if start != []:
-            startNode = start[0]
-            self.nodes.remove(startNode)
-            self.nodes += [startNode]
+        if start:
+            start_node = start[0]
+            self.nodes.remove(start_node)
+            self.nodes += [start_node]
         end = [x for x in self.nodes if x.position == "end"]
-        if end != []:
-            endNode = end[0]
-            self.nodes.remove(endNode)
-            self.nodes += [endNode]
-
+        if end:
+            end_node = end[0]
+            self.nodes.remove(end_node)
+            self.nodes += [end_node]
 
     def draw_nodes(self):
-        "Draw the nodes"
+        """Draw the nodes"""
         self.board_drawn = self.board.copy()
 
         for node in self.nodes:
@@ -391,7 +386,6 @@ def mouse_event(event, x, y, flags, param):
     """
     global maps
     global actions
-    global route
 
     if actions["draw"] == "draw_nodes" and event == cv2.EVENT_LBUTTONDOWN:
         maps.no_nodes += 1
@@ -426,10 +420,15 @@ def get_window():
     # Event Loop to process "events" and get the "values" of the inputs
 
 
-def check_window(window):
+def check_window(gui_window):
+    """
+    Check pysimplegui for input and react
+    :param gui_window:
+    :return:
+    """
     global maps
     global actions
-    event, values = window.read(1)
+    event, values = gui_window.read(1)
 
     if event == sg.WIN_CLOSED or event == 'Cancel':  # if user closes window or clicks cancel
         actions["quit"] = True
@@ -472,13 +471,13 @@ def check_window(window):
 
 
 def run():
+    """ Run the map etc"""
     global maps
-
     while True:
         # get user defined board if needed
         if actions["init"]:
             actions["init"] = False
-            maps = Map(height, width, nodes=nodes)
+            maps = Map(height, width, no_nodes=nodes)
 
         # find solution if needed
         if actions["find"]:
@@ -506,20 +505,33 @@ def run():
             return
 
 
-nodes = 600
-height = 800
-width = 1600
-max_nodes = int((height * width) / 750)
-window_name = "diijkstras"
-maps = None
-cv2.namedWindow(window_name)
-cv2.createTrackbar("Nodes", window_name, nodes, max_nodes, change_nodes)
-cv2.setMouseCallback(window_name, mouse_event)
-window = get_window()
-
-actions = {"init": True, "find": True, "draw": True, "draw_board": True, "quit": False}
-
-run()
-
 if __name__ == "__main__":
-    pass
+    # get args
+    parser = argparse.ArgumentParser(description="""Python Dijkstras Implementation with GUI-- \n\n
+                                                    Calculating the shortest distance between Nodes.                                                     
+                                                 """)
+    parser.add_argument("--width", default=1600, type=int,
+                        help="Width of the 'map' in pixels")
+    parser.add_argument("--height", default=800, type=int, help="Height of the 'map' in pixels")
+
+    args = parser.parse_args()
+
+    # get height width of board
+    height = args.height
+    width = args.width
+    # get min and max nodes
+    nodes = int((height * width) / 7500)
+    max_nodes = int((height * width) / 768)
+    # set cv2 window details
+    window_name = "Dijkstras"
+    cv2.namedWindow(window_name)
+    cv2.createTrackbar("Nodes", window_name, nodes, max_nodes, change_nodes)
+    cv2.setMouseCallback(window_name, mouse_event)
+    # set map global var
+    maps = None
+    # get pysimpleguy window
+    window = get_window()
+    # set run  actions
+    actions = {"init": True, "find": True, "draw": True, "draw_board": True, "quit": False}
+    # run
+    run()
