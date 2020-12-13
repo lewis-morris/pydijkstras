@@ -46,7 +46,7 @@ python run.py --height 400 --width 400
 
 ### Road Example
 
-![example board](https://i.imgur.com/R8hch4c.png)
+![Road](road.gif)
 
 Once open you will see the completed, randomly generated node graph and the quickest route from A to B.
 
@@ -70,10 +70,14 @@ Using the above toolbar and node slider you can interact with the nodes.
 
 - **Quit** - Quit the program.
 
-## Maze Example
+## Maze/ Draw Example
 
+![Maze](maze.gif)
+![Draw](draw.gif)
 
 ![Toolbar](https://i.imgur.com/ZhTsv4e.png)
+
+With maze mode enabled you can generate and solve a maze or draw your own.
 
 #### Options
 
