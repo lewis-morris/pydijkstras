@@ -42,7 +42,9 @@ i.e
 python run.py --height 400 --width 400
 ```
 
-#### How to use
+## How to use
+
+### Road Example
 
 ![example board](https://i.imgur.com/R8hch4c.png)
 
@@ -67,3 +69,38 @@ Using the above toolbar and node slider you can interact with the nodes.
 - **Reload Edges** - Regenerates new edges for each node.
 
 - **Quit** - Quit the program.
+
+## Maze Example
+
+
+![Toolbar](https://i.imgur.com/ZhTsv4e.png)
+
+#### Options
+
+- **Make Maze** - Draws a completely random maze network
+
+- **Clear** - Wipes the board clean 
+
+- **Draw** - Draw walls or terrain (use the slider and radio buttons to change effect)
+
+- **Change Start Point** - Click on the map to add an start point
+
+- **Change End Point** - Click on the map to add an end point 
+
+- **Search** - Click to run the search
+
+- **Quit** - Quit the program.
+
+#### Brush options
+
+- **Brush Size** - Change the size of the brush you are drawing with
+
+- **Terrain Type** - The harder the terrain the longer it takes to pass through.
+  
+
+  > - **Impassable** - or Walls
+  > - **Hard** 
+  > - **Medium** 
+  > - **Easy** 
+  > - **Remove** - An eraser
+
