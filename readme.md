@@ -34,6 +34,9 @@ optional arguments:
   -h, --help       show this help message and exit
   --width WIDTH    Width of the 'map' in pixels
   --height HEIGHT  Height of the 'map' in pixels
+  --maze MAZE      Set to 1 if you want to view the maze and not the road
+                   version
+
 
 ```
 
