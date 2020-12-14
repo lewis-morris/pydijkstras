@@ -1,4 +1,4 @@
-# python-tsp
+# pydijkstras
 
 ## A python implementation of Dijkstra's shortest path algorithm.
 
