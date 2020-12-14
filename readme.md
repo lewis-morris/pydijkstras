@@ -9,8 +9,8 @@
 First navigate to a directory where you want to download it to...
 
 ```
-git clone https://github.com/lewis-morris/pydiijkstras
-cd pydiijkstras
+git clone https://github.com/lewis-morris/pydijkstras
+cd pydijkstras
 pip install -r requirements.txt
 
 ```
